@@ -1,19 +1,11 @@
-/* ==========================================================================
-   Cyril Fassiau - fassiau-dev.com
-   No scroll listeners anywhere: every scroll-driven behaviour below runs on
-   IntersectionObserver so it stays off the main thread.
-   ========================================================================== */
+
 
 (function () {
   'use strict';
 
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-  /* ------------------------------------------------------------------------
-     1. THEME
-     Three states: no stored value follows the system, otherwise the stored
-     choice wins. The pre-paint resolution lives inline in the document head.
-     ------------------------------------------------------------------------ */
+ 
 
   var themeToggle = document.getElementById('theme-toggle');
   var systemDark = window.matchMedia('(prefers-color-scheme: dark)');
@@ -38,19 +30,17 @@
       document.documentElement.setAttribute('data-theme', next);
       try {
         localStorage.setItem('cf-theme', next);
-      } catch (e) { /* private mode: the choice just will not persist */ }
+      } catch (e) { }
       syncToggleLabel();
     });
 
-    // follow the OS while the user has not made an explicit choice
+    
     systemDark.addEventListener('change', function () {
       if (!document.documentElement.hasAttribute('data-theme')) syncToggleLabel();
     });
   }
 
-  /* ------------------------------------------------------------------------
-     2. MOBILE MENU
-     ------------------------------------------------------------------------ */
+ 
 
   var menuBtn = document.getElementById('mobile-menu-btn');
   var mainNav = document.getElementById('main-nav');
@@ -89,10 +79,7 @@
     });
   }
 
-  /* ------------------------------------------------------------------------
-     3. NAVBAR ELEVATION
-     A 1px sentinel at the top of the document replaces the old scroll handler.
-     ------------------------------------------------------------------------ */
+ 
 
   var navbar = document.getElementById('navbar');
 
@@ -107,11 +94,7 @@
     }).observe(sentinel);
   }
 
-  /* ------------------------------------------------------------------------
-     4. SCROLL SPY
-     The .active styling has existed since the first build but nothing ever
-     applied the class.
-     ------------------------------------------------------------------------ */
+ 
 
   var navLinks = Array.prototype.slice.call(document.querySelectorAll('.nav-link[href^="#"]'));
   var sections = navLinks
@@ -145,14 +128,12 @@
     sections.forEach(function (section) { spy.observe(section); });
   }
 
-  /* ------------------------------------------------------------------------
-     5. SCROLL REVEAL
-     ------------------------------------------------------------------------ */
+ 
 
   var revealables = document.querySelectorAll('.reveal');
 
   if (!revealables.length) {
-    // nothing to do
+    
   } else if (!('IntersectionObserver' in window) || prefersReducedMotion.matches) {
     revealables.forEach(function (el) { el.classList.add('is-visible'); });
   } else {
@@ -167,9 +148,7 @@
     revealables.forEach(function (el) { revealObserver.observe(el); });
   }
 
-  /* ------------------------------------------------------------------------
-     6. CONTACT FORM (Netlify)
-     ------------------------------------------------------------------------ */
+ 
 
   var contactForm = document.getElementById('contact-form');
   var contactStatus = document.getElementById('contact-form-status');
@@ -216,12 +195,7 @@
     });
   }
 
-  /* ------------------------------------------------------------------------
-     7. HERO WAVE FIELD
-     The site signature. Now gated three ways: it never starts under reduced
-     motion, it pauses when the hero scrolls out of view, and it pauses when
-     the tab is hidden. Previously it ran forever in background tabs.
-     ------------------------------------------------------------------------ */
+ 
 
   var heroBg = document.querySelector('.hero-bg');
   var paths = document.querySelectorAll('#waves path');
