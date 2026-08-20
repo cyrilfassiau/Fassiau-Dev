@@ -125,10 +125,10 @@
   :root:not([data-theme="light"]) {
     --bg: #0D1B4B;
     --bg-sunken: #060f2a;
-    --surface: #0D1B4B;
-    --surface-raised: #142157;
-    --border: rgba(255, 255, 255, 0.14);
-    --border-strong: rgba(255, 255, 255, 0.3);
+    --surface: #132860;
+    --surface-raised: #1b2d67;
+    --border: rgba(255, 255, 255, 0.18);
+    --border-strong: rgba(255, 255, 255, 0.38);
     --field-border: rgba(255, 255, 255, 0.42);
     --text: #ffffff;
     --text-muted: rgba(255, 255, 255, 0.72);
@@ -153,10 +153,10 @@
 :root[data-theme="dark"] {
   --bg: #0D1B4B;
   --bg-sunken: #060f2a;
-  --surface: #0D1B4B;
-  --surface-raised: #142157;
-  --border: rgba(255, 255, 255, 0.14);
-  --border-strong: rgba(255, 255, 255, 0.3);
+  --surface: #132860;
+  --surface-raised: #1b2d67;
+  --border: rgba(255, 255, 255, 0.18);
+  --border-strong: rgba(255, 255, 255, 0.38);
   --field-border: rgba(255, 255, 255, 0.42);
   --text: #ffffff;
   --text-muted: rgba(255, 255, 255, 0.72);
@@ -672,6 +672,7 @@ nav.main-nav ul {
   gap: 1rem;
   padding: clamp(1rem, 0.8rem + 0.8vw, 1.5rem);
 
+  border: 1px solid var(--border);
   border-radius: var(--r-lg);
   background-color: var(--surface);
   box-shadow: var(--shadow-card);
@@ -688,6 +689,7 @@ nav.main-nav ul {
 .project-image-wrapper {
   position: relative;
   overflow: hidden;
+  border: 1px solid var(--border);
   border-radius: var(--r-md);
   aspect-ratio: 4 / 3;
   background-color: var(--surface-raised);
@@ -1127,12 +1129,18 @@ html:not(.js) .reveal { opacity: 1; transform: none; }
   .services-grid { grid-template-columns: repeat(3, 1fr); }
   .projects-grid { grid-template-columns: repeat(12, 1fr); }
 
- 
-  .project-card:nth-child(1) { grid-column: span 7; }
-  .project-card:nth-child(2) { grid-column: span 5; }
-  .project-card:nth-child(3) { grid-column: span 12; }
+  /* Ensure project cards without explicit column spans take full width
+     so additional projects keep the same visual weight as the first three. */
+  .project-card { grid-column: span 12; }
 
-  .project-card:nth-child(3) {
+ 
+  /* Repeat the 3-card layout pattern for every group of three cards:
+     1 -> large (span 7), 2 -> small (span 5), 3 -> full-width split layout */
+  .project-card:nth-child(3n+1) { grid-column: span 7; }
+  .project-card:nth-child(3n+2) { grid-column: span 5; }
+  .project-card:nth-child(3n)   { grid-column: span 12; }
+
+  .project-card:nth-child(3n) {
     display: grid;
     grid-template-columns: 5fr 7fr;
     gap: clamp(1.25rem, 0.8rem + 1.6vw, 2.5rem);
