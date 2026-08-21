@@ -132,11 +132,9 @@
 
   var revealables = document.querySelectorAll('.reveal');
 
-  if (!revealables.length) {
-    
-  } else if (!('IntersectionObserver' in window) || prefersReducedMotion.matches) {
+  if (revealables.length && (!('IntersectionObserver' in window) || prefersReducedMotion.matches)) {
     revealables.forEach(function (el) { el.classList.add('is-visible'); });
-  } else {
+  } else if (revealables.length) {
     var revealObserver = new IntersectionObserver(function (entries, observer) {
       entries.forEach(function (entry) {
         if (!entry.isIntersecting) return;
@@ -174,7 +172,7 @@
           if (!response.ok) throw new Error('Erreur réseau');
           contactForm.reset();
           if (contactStatus) {
-            contactStatus.textContent = 'Merci, votre message a bien été envoyé !';
+            contactStatus.textContent = 'Merci, votre message a bien été envoyé\u202F!';
             contactStatus.classList.remove('is-error');
             contactStatus.classList.add('is-success');
           }

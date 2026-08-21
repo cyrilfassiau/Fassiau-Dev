@@ -2,3 +2,8 @@
   from = "/mentions-legales"
   to = "/mentions-legales.html"
   status = 200
+
+[[redirects]]
+  from = "/projects"
+  to = "/projects.html"
+  status = 200
