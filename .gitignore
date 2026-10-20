@@ -7,3 +7,6 @@
 
 # Netlify CLI
 .netlify/
+.claude
+.agents
+skills.lock.json
