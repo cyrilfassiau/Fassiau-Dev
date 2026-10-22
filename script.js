@@ -3,10 +3,6 @@
 (function () {
   'use strict';
 
-  var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-
- 
-
   var themeToggle = document.getElementById('theme-toggle');
   var systemDark = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -130,24 +126,6 @@
 
  
 
-  var revealables = document.querySelectorAll('.reveal');
-
-  if (revealables.length && (!('IntersectionObserver' in window) || prefersReducedMotion.matches)) {
-    revealables.forEach(function (el) { el.classList.add('is-visible'); });
-  } else if (revealables.length) {
-    var revealObserver = new IntersectionObserver(function (entries, observer) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target);
-      });
-    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
-
-    revealables.forEach(function (el) { revealObserver.observe(el); });
-  }
-
- 
-
   var contactForm = document.getElementById('contact-form');
   var contactStatus = document.getElementById('contact-form-status');
 
@@ -191,80 +169,5 @@
           }
         });
     });
-  }
-
- 
-
-  var heroBg = document.querySelector('.hero-bg');
-  var paths = document.querySelectorAll('#waves path');
-
-  if (heroBg && paths.length && !prefersReducedMotion.matches) {
-    var waves = [];
-
-    paths.forEach(function (path, index) {
-      var original = path.getAttribute('d');
-      var numbers = original.match(/-?\d+(\.\d+)?/g).map(Number);
-
-      waves.push({
-        path: path,
-        numbers: numbers,
-        speed: 0.0012 + index * 0.000045,
-        phase: index * 0.5
-      });
-    });
-
-    var frameId = null;
-    var inView = true;
-
-    function animate(time) {
-      waves.forEach(function (wave) {
-        var n = wave.numbers;
-        var offset1 = Math.sin(time * wave.speed + wave.phase) * 12;
-        var offset2 = Math.sin(time * wave.speed * 0.7 + wave.phase) * 8;
-
-        wave.path.setAttribute('d',
-          'M ' + n[0] + ',' + n[1] +
-          ' C ' + n[2] + ',' + (n[3] + offset1) +
-          ' ' + n[4] + ',' + (n[5] + offset2) +
-          ' ' + n[6] + ',' + (n[7] + offset1) +
-          ' S ' + n[8] + ',' + (n[9] + offset2) +
-          ' ' + n[10] + ',' + n[11]
-        );
-      });
-
-      frameId = requestAnimationFrame(animate);
-    }
-
-    function start() {
-      if (frameId === null) frameId = requestAnimationFrame(animate);
-    }
-
-    function stop() {
-      if (frameId !== null) {
-        cancelAnimationFrame(frameId);
-        frameId = null;
-      }
-    }
-
-    function sync() {
-      if (inView && !document.hidden) start();
-      else stop();
-    }
-
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver(function (entries) {
-        inView = entries[0].isIntersecting;
-        sync();
-      }, { threshold: 0 }).observe(heroBg);
-    }
-
-    document.addEventListener('visibilitychange', sync);
-
-    prefersReducedMotion.addEventListener('change', function (e) {
-      if (e.matches) stop();
-      else sync();
-    });
-
-    sync();
   }
 })();
