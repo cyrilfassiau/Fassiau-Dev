@@ -723,9 +723,12 @@ a { color: inherit; }
 .hero-frame {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  align-content: end;
+  align-content: center;
   gap: clamp(2rem, 1.5rem + 2vw, 3rem);
-  min-height: min(calc(100svh - 72px - 2.5rem), 52rem);
+  /* Assez haute pour faire « affiche », sans laisser de grand vide au-dessus. */
+  min-height: min(calc(100svh - 72px - 2.5rem), 40rem);
+  /* La taille du titre se calcule sur la largeur de la feuille (cqi). */
+  container-type: inline-size;
   padding: clamp(5rem, 3rem + 6vw, 8rem) clamp(1.5rem, 0.5rem + 5vw, 6rem) clamp(2rem, 1.5rem + 3vw, 4rem);
   border-radius: var(--r-card);
   background-color: var(--sable);
@@ -737,7 +740,9 @@ a { color: inherit; }
   flex-direction: column;
   align-items: flex-start;
   font-family: var(--font-body);
-  font-size: clamp(3rem, 0.9rem + 8.6vw, 8.5rem);
+  /* « FASSIAU. » mesure 4.22em : diviser la largeur disponible par 4.3
+     garantit que le titre tient toujours, quelle que soit la fenetre. */
+  font-size: min(calc(100cqi / 4.3), 8.5rem);
   font-weight: 800;
   line-height: 0.92;
   letter-spacing: 0.01em;
@@ -745,7 +750,9 @@ a { color: inherit; }
 }
 
 /* Ligne 1 : une goutiere creusee, mot en relief a l'interieur. */
-.hero-line--raised { margin-left: clamp(0rem, -2rem + 12vw, 16rem); margin-bottom: 0.12em; }
+/* Decalage en em : la ligne « CYRIL » (0.6em + 3.14em) reste plus courte
+   que « FASSIAU. » (4.22em), donc jamais plus large que le titre. */
+.hero-line--raised { margin-left: 0.6em; margin-bottom: 0.12em; }
 
 .hero-channel {
   display: inline-block;
@@ -814,14 +821,15 @@ a { color: inherit; }
 }
 
 /* Ecrans larges : le texte se place a droite de la ligne gravee. */
+/* Le titre et le texte ont chacun leur colonne : ils ne peuvent plus se
+   chevaucher. Le titre se dimensionne sur la place qui lui reste. */
 @media (min-width: 1024px) {
   .hero-frame {
-    grid-template-columns: minmax(0, 1fr) 22rem;
+    grid-template-columns: minmax(0, 1fr) 20rem;
     align-items: end;
     column-gap: 3rem;
   }
-  .hero-aside { grid-column: 2; grid-row: 1; justify-self: end; }
-  .hero-heading { grid-column: 1 / -1; grid-row: 1; }
+  .hero-heading { font-size: min(calc((100cqi - 23rem) / 4.3), 8.5rem); }
 }
 
 
