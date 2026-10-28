@@ -1469,64 +1469,86 @@ a { color: inherit; }
 
 
 
-.site-footer { padding-block: clamp(2.5rem, 2rem + 2vw, 4rem); }
+.site-footer { padding-block: 0.75rem 1.25rem; }
 
-.footer-container {
+/* Pied de page d'apres relevovinco.com : un bac creuse dans la surface, avec
+   les memes couleurs et ombres que la goutiere « CYRIL » du hero. Meme
+   hauteur qu'avant : le contenu tient en deux lignes separees par un filet. */
+.footer-tray {
+  --focus-ring: var(--channel-ink);
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  align-items: center;
-  text-align: center;
+  padding: 1.5rem clamp(1.25rem, 0.5rem + 3vw, 3rem);
+  border-radius: var(--r-card);
+  background-color: var(--channel);
+  box-shadow: var(--shadow-pressed);
+  color: var(--channel-ink);
 }
 
-.footer-logo {
-  font-family: var(--font-display);
-  font-size: 1.75rem;
-  letter-spacing: -0.03em;
+.footer-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem 2rem;
+}
+
+/* Nom en relief dans le bac. */
+.footer-mark {
+  font-family: var(--font-body);
+  font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2.25rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  text-shadow: var(--text-raised);
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.5rem;
+}
+
+/* Liens soulignes en pointilles, comme sur la reference. */
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--channel-ink);
+  text-decoration: underline dotted;
+  text-decoration-color: color-mix(in srgb, var(--channel-ink) 55%, transparent);
+  text-underline-offset: 0.35em;
+}
+
+.footer-link:hover {
+  text-decoration-style: solid;
+  text-decoration-color: currentColor;
+}
+
+.footer-link .icon { font-size: 1.1rem; }
+
+/* Filet grave entre les deux lignes. */
+.footer-crease {
+  display: block;
+  height: 3px;
+  margin-block: 0.75rem;
+  border-radius: 2px;
+  box-shadow: var(--shadow-pressed);
 }
 
 .footer-copyright {
-  margin-top: 0.25rem;
-  color: var(--ink-faint);
   font-size: var(--fs-sm);
+  color: color-mix(in srgb, var(--channel-ink) 72%, transparent);
 }
 
-.footer-socials { display: flex; gap: 0.5rem; }
-
-.social-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  min-height: 44px;
-  padding-inline: 1.1rem;
-  border-radius: var(--r-full);
-  background-color: var(--sable);
-  color: var(--ink);
-  font-size: 1.25rem;
-  text-decoration: none;
-  transition: background-color 0.2s var(--ease);
+/* Telephones : un peu plus d'air, pour garder la hauteur d'origine. */
+@media (max-width: 639px) {
+  .site-footer { padding-block: 1.25rem 2rem; }
+  .footer-tray { padding-block: 1.75rem; }
 }
-
-.social-link:hover { background-color: var(--lavande); }
-
-.social-link-text { font-size: var(--fs-sm); font-weight: 500; }
-
-.footer-meta {
-  color: var(--ink-faint);
-  font-size: var(--fs-sm);
-}
-
-.footer-meta-highlight { color: var(--ink-soft); }
-
-a.footer-meta-highlight {
-  display: inline-block;
-  padding-block: 0.7rem;
-  text-decoration: underline;
-  text-decoration-color: var(--border-strong);
-  text-underline-offset: 0.3em;
-}
-
-a.footer-meta-highlight:hover { color: var(--ink); text-decoration-color: currentColor; }
 
 
 
@@ -1574,10 +1596,10 @@ a.footer-meta-highlight:hover { color: var(--ink); text-decoration-color: curren
 
 @media (min-width: 640px) {
   .contact-form-row { grid-template-columns: 1fr 1fr; }
-  .footer-container {
+  .footer-row {
     flex-direction: row;
+    align-items: center;
     justify-content: space-between;
-    text-align: left;
   }
 }
 
@@ -1700,6 +1722,6 @@ a.footer-meta-highlight:hover { color: var(--ink); text-decoration-color: curren
 
 
 @media print {
-  #navbar, .footer-socials, .contact-form { display: none; }
+  #navbar, .footer-links, .contact-form { display: none; }
   body { background: #fff; color: #000; }
 }
