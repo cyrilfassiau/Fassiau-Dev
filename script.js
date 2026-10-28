@@ -38,57 +38,99 @@
 
  
 
-  var menuBtn = document.getElementById('mobile-menu-btn');
-  var mainNav = document.getElementById('main-nav');
+  var island = document.getElementById('island');
+  var islandToggle = document.getElementById('island-toggle');
+  var islandCompact = document.getElementById('island-compact');
+  var islandPanel = document.getElementById('island-panel');
+  var chipLabel = document.getElementById('island-chip-label');
+  var chipIcon = document.getElementById('island-chip-icon');
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var fitIsland = function () {};
 
-  if (menuBtn && mainNav) {
-    var openMenu = function () {
-      mainNav.classList.add('is-open');
-      menuBtn.setAttribute('aria-expanded', 'true');
-      menuBtn.setAttribute('aria-label', 'Fermer le menu');
+  if (island && islandToggle && islandCompact && islandPanel) {
+    var isOpen = function () { return island.classList.contains('is-open'); };
+
+    // La forme s'anime entre deux tailles reelles : on mesure le contenu de
+    // l'etat vise (pilule ou panneau) et on lui donne ses dimensions.
+    fitIsland = function () {
+      var target = isOpen() ? islandPanel : islandCompact;
+      island.style.setProperty('--island-w', target.offsetWidth + 'px');
+      island.style.setProperty('--island-h', target.offsetHeight + 'px');
     };
 
-    var closeMenu = function () {
-      mainNav.classList.remove('is-open');
-      menuBtn.setAttribute('aria-expanded', 'false');
-      menuBtn.setAttribute('aria-label', 'Ouvrir le menu');
+    var fitWithoutAnimation = function () {
+      island.classList.add('no-anim');
+      fitIsland();
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { island.classList.remove('no-anim'); });
+      });
     };
 
-    menuBtn.addEventListener('click', function () {
-      if (mainNav.classList.contains('is-open')) closeMenu();
-      else openMenu();
+    var openIsland = function () {
+      island.classList.add('is-open');
+      islandToggle.setAttribute('aria-expanded', 'true');
+      island.parentElement.classList.add('has-open-island');
+      islandToggle.setAttribute('aria-label', 'Fermer le menu');
+      fitIsland();
+    };
+
+    var closeIsland = function () {
+      island.classList.remove('is-open');
+      islandToggle.setAttribute('aria-expanded', 'false');
+      island.parentElement.classList.remove('has-open-island');
+      islandToggle.setAttribute('aria-label', 'Ouvrir le menu');
+      fitIsland();
+    };
+
+    islandToggle.addEventListener('click', function () {
+      if (isOpen()) closeIsland();
+      else openIsland();
     });
 
-    mainNav.querySelectorAll('.nav-link').forEach(function (link) {
-      link.addEventListener('click', closeMenu);
+    // Toute la pilule fermee est cliquable, pas seulement le bouton.
+    islandCompact.addEventListener('click', openIsland);
+
+    islandPanel.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', closeIsland);
     });
 
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && mainNav.classList.contains('is-open')) {
-        closeMenu();
-        menuBtn.focus();
+      if (e.key === 'Escape' && isOpen()) {
+        closeIsland();
+        islandToggle.focus();
       }
     });
 
-    window.matchMedia('(min-width: 768px)').addEventListener('change', function (e) {
-      if (e.matches) closeMenu();
+    document.addEventListener('pointerdown', function (e) {
+      if (isOpen() && !island.contains(e.target)) closeIsland();
     });
+
+    // Le focus clavier quitte l'ilot : on le referme.
+    island.addEventListener('focusout', function (e) {
+      if (isOpen() && e.relatedTarget && !island.contains(e.relatedTarget)) closeIsland();
+    });
+
+    window.addEventListener('resize', fitWithoutAnimation);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitWithoutAnimation);
+    fitWithoutAnimation();
   }
 
- 
+  // Affiche dans la pilule la section en cours.
+  var updateChip = function (link) {
+    if (!chipLabel || !chipIcon) return;
+    var label = link.textContent.trim();
+    if (chipLabel.textContent === label) return;
 
-  var navbar = document.getElementById('navbar');
-
-  if (navbar && 'IntersectionObserver' in window) {
-    var sentinel = document.createElement('div');
-    sentinel.setAttribute('aria-hidden', 'true');
-    sentinel.style.cssText = 'position:absolute;top:0;left:0;width:1px;height:1px;pointer-events:none;';
-    document.body.prepend(sentinel);
-
-    new IntersectionObserver(function (entries) {
-      navbar.classList.toggle('is-stuck', !entries[0].isIntersecting);
-    }).observe(sentinel);
-  }
+    chipLabel.textContent = label;
+    chipIcon.setAttribute('href', '#' + link.getAttribute('data-icon'));
+    if (chipLabel.animate && !reduceMotion.matches) {
+      chipLabel.animate(
+        [{ opacity: 0, filter: 'blur(4px)' }, { opacity: 1, filter: 'blur(0)' }],
+        { duration: 260, easing: 'ease-out' }
+      );
+    }
+    if (island && !island.classList.contains('is-open')) fitIsland();
+  };
 
  
 
@@ -100,7 +142,14 @@
   if (sections.length && 'IntersectionObserver' in window) {
     var setActive = function (id) {
       navLinks.forEach(function (link) {
-        link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+        var on = link.getAttribute('href') === '#' + id;
+        link.classList.toggle('active', on);
+        if (on) {
+          link.setAttribute('aria-current', 'location');
+          updateChip(link);
+        } else {
+          link.removeAttribute('aria-current');
+        }
       });
     };
 
