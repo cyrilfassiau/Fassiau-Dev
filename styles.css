@@ -729,11 +729,16 @@ a { color: inherit; }
   min-height: min(calc(100svh - 72px - 2.5rem), 40rem);
   /* La taille du titre se calcule sur la largeur de la feuille (cqi). */
   container-type: inline-size;
-  padding: clamp(5rem, 3rem + 6vw, 8rem) clamp(1.5rem, 0.5rem + 5vw, 6rem) clamp(2rem, 1.5rem + 3vw, 4rem);
-  border-radius: var(--r-card);
+  /* Pleine largeur : la feuille va d'un bord a l'autre, mais le contenu garde
+     la position qu'il avait dans le cadre de 80rem (meme alignement que les
+     autres sections). */
+  padding-block: clamp(5rem, 3rem + 6vw, 8rem) clamp(2rem, 1.5rem + 3vw, 4rem);
+  padding-inline: calc(max(0px, (100% - var(--shell)) / 2) + var(--sp-gutter) + clamp(1.5rem, 0.5rem + 5vw, 6rem));
   background-color: var(--sable);
   box-shadow: var(--shadow-raised);
 }
+
+.hero > .shell { max-width: none; padding-inline: 0; }
 
 .hero-heading {
   display: flex;
